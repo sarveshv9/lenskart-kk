@@ -1,13 +1,12 @@
-# VeriTrust: AI-Powered Decentralized Reputation for the Gig Economy
+# React + Vite
 
-## Project Overview
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-VeriTrust is a decentralized application (DApp) designed to revolutionize reputation management in the gig economy. It tackles the flaws of centralized systems by combining blockchain's immutability with AI-driven sentiment analysis and fraud detection. The goal is to provide freelancers with a verifiable, portable, and tamper-proof professional reputation, enhanced by an application-level Proof of Work (PoW) to deter spam. This project aims to deliver a functional prototype.
+Currently, two official plugins are available:
 
-## Architecture & Flow
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-Below is a high-level diagram illustrating how the Frontend, Backend, AI Models, Blockchain, and Off-chain Database interact within the VeriTrust system.
-![VeriTrust Architecture Diagram](docs/assets/architecture_diagram.png)
+## Expanding the ESLint configuration
 
-
-# lenskart-kk
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
