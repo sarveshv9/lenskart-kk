@@ -1,0 +1,306 @@
+@import url('https://fonts.googleapis.com/css2?family=Gasoek+One&display.swap');
+
+.how-it-works {
+  position: relative;
+  /* background: #ffffff; */ /* <-- CHANGED */
+  background: #000a1f; /* <-- To match dark theme & see blobs */
+  padding: 20vh 0 20vh 0;
+  border-radius: 50px;
+}
+
+/* --- REMOVED THE ::before RULE --- */
+/*
+.how-it-works::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: #ffffff;
+  z-index: 1;
+  pointer-events: none;
+}
+*/
+
+/* Pin container */
+.pin-container {
+  height: auto;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.pinned-text {
+  font-size: 7rem;
+  font-weight: 1000;
+  line-height: 1.1;
+  color: #f1f5f9;
+  text-align: center;
+  white-space: nowrap;
+  z-index: 10;
+  font-family: "Gasoek One", sans-serif;
+  letter-spacing: -2px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  will-change: transform, opacity;
+  transform-origin: center center;
+}
+
+/* Steps container - simplified approach */
+.steps-container {
+  position: relative;
+  z-index: 3;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  padding-top: 30vh;
+}
+
+.step-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 0 5%;
+  height: auto;
+
+  /* Initial state for animation */
+  opacity: 0;
+  transform: translateY(50px) scale(0.95);
+
+  will-change: transform, opacity, rotateX;
+  top: 0;
+  left: 0;
+  right: 0;
+  perspective: 1000px;
+  transform-style: preserve-3d;
+  margin-bottom: 80vh;
+}
+
+.step-container:last-child {
+  margin-bottom: 80vh;
+}
+
+/* --- MODIFIED: Glassmorphism effect + Glow --- */
+.step-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+  width: 80vw;
+  height: 60vh;
+  padding: 2rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Glassmorphism background */
+  background: rgba(0, 16, 43, 0.500); /* Dark slate blue tint with 75% opacity */
+  backdrop-filter: blur(12px);          /* The "frosted glass" effect */
+  -webkit-backdrop-filter: blur(12px); /* For Safari support */
+
+  /* Glassmorphism border */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50px;
+  
+  /* --- CORRECTED GLOW --- */
+  box-shadow: 0 0 21px 6px rgba(59, 130, 246, 0.5); /* Blue glow */
+
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+
+/* We removed the conflicting .step-content::before rules */
+
+.step-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  will-change: transform, opacity, rotateX;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+
+.step-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex;
+  will-change: transform, opacity, rotateX;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+
+.step-icon {
+  font-size: 6rem;
+  margin-bottom: 2rem;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.step-title {
+  font-size: clamp(2.5rem, 4vw, 4rem);
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0;
+
+  /* Light text for dark theme */
+  background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.step-description {
+  font-style: normal;
+  line-height: 1.6;
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+
+  /* Light text for dark theme */
+  color: #cbd5e1;
+
+  margin: 0;
+  max-width: 700px;
+  text-align: left;
+  font-family: "GeneralSans-Extralight", system-ui, sans-serif;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.step-number {
+  position: absolute;
+  bottom: 35%;
+  right: 5%;
+  font-size: clamp(8rem, 15vw, 12rem);
+  font-weight: 900;
+  /* Lighter opacity for dark theme */
+  color: rgba(255, 255, 255, 0.05);
+  z-index: -1;
+  user-select: none;
+}
+
+/* Section spacer to prevent next section overlap */
+.section-spacer {
+  height: 50vh;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+  background: transparent;
+}
+
+/* Font faces */
+@font-face {
+  font-family: "GeneralSans-Extralight";
+  src: url("../assets/fonts/GeneralSans-Extralight.otf") format("opentype");
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "GeneralSans-Semibold";
+  src: url("/assets/fonts/GeneralSans-Semibold.otf") format("opentype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .step-content {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    text-align: center;
+    padding: 0 1rem;
+  }
+
+  .step-left {
+    align-items: center; /* Corrected typo 'align-itemss' */
+  }
+
+  .step-right {
+    justify-content: center;
+  }
+
+  .step-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+  }
+
+  .step-number {
+    font-size: 6rem;
+    top: 10%;
+    right: 10%;
+  }
+
+  .pinned-text {
+    font-size: 4rem;
+  }
+
+  .step-container {
+    height: 90vh;
+  }
+
+  .section-spacer {
+    height: 80vh;
+  }
+}
+
+@media (max-width: 480px) {
+  .step-content {
+    padding: 0 0.5rem;
+  }
+
+  .step-icon {
+    font-size: 3rem;
+  }
+
+  .pinned-text {
+    font-size: 3rem;
+  }
+
+  .step-container {
+    height: 80vh;
+  }
+
+  .section-spacer {
+    height: 60vh;
+  }
+}
+
+/* ===============================================
+  NEW STYLES FOR ANIMATED BLOBS
+===============================================
+*/
+
+.blob-container {
+  position: absolute;
+  inset: 0; /* Cover the entire .how-it-works section */
+  overflow: hidden;
+  z-index: 100; /* Behind steps (z-index: 3) and title (z-index: 10) */
+  border-radius: inherit; /* Match parent's rounded corners */
+  pointer-events: none;
+}
+
+.blob {
+  position: absolute;
+  will-change: transform; /* Optimize for animation */
+  border-radius: 50%;
+  
+  /* --- This creates the "soft, airy" look --- */
+  opacity: 0.4; 
+  filter: blur(120px);
+  
+  /* --- Set colors to match your BG.jpg/theme --- */
+  background: radial-gradient(circle, #3b82f6 0%, #1e3a8a 100%);
+}
+
+/* First blob */
+.blob.one {
+  width: 700px;
+  height: 700px;
+  top: 10%;
+  left: 10%;
+}
