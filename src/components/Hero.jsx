@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useCallback } from 'react';
 import { gsap } from 'gsap';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import '../styles/Hero.css';
 import SparkleButton from '../components/elements/SparkleButton';
 import CurvedImageLoop from '../hooks/useCurvedLoop';
@@ -12,13 +13,19 @@ const Hero = React.memo(({ onSearchGig }) => {
   const buttonRef = useRef(null);
   const curvedImageRef = useRef(null);
   const timelineRef = useRef(null);
+  
+  // Hook for navigation
+  const navigate = useNavigate();
 
-  // Memoize the submit handler to prevent unnecessary re-renders
+  // UPDATED: Submit handler now navigates to a new page
   const handleSubmit = useCallback(() => {
+    // Navigate to the shop route
+    navigate('/shop');
+
     if (onSearchGig) {
       onSearchGig('get-started');
     }
-  }, [onSearchGig]);
+  }, [navigate, onSearchGig]);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -55,13 +62,13 @@ const Hero = React.memo(({ onSearchGig }) => {
         opacity: 1,
         y: 0,
         duration: 1.0
-      }, "-=0.6") // Start 0.6s before previous animation ends
+      }, "-=0.6") 
       .to(buttonRef.current, {
         opacity: 1,
         y: 0,
         duration: 0.8
       }, "-=0.2")
-      // Animate curved image last (slides up from bottom)
+      // Animate curved image last
       .to(curvedImageRef.current, {
         opacity: 1,
         y: 0,
@@ -71,7 +78,7 @@ const Hero = React.memo(({ onSearchGig }) => {
 
       timelineRef.current = tl;
 
-      // Optional: Add mouse parallax effect (reduced intensity)
+      // Mouse parallax effect
       const handleMouseMove = (e) => {
         const rect = heroRef.current?.getBoundingClientRect();
         if (!rect) return;
@@ -97,8 +104,6 @@ const Hero = React.memo(({ onSearchGig }) => {
       const hero = heroRef.current;
       if (hero) {
         hero.addEventListener('mousemove', handleMouseMove);
-        
-        // Cleanup function
         return () => {
           hero.removeEventListener('mousemove', handleMouseMove);
         };
@@ -112,7 +117,7 @@ const Hero = React.memo(({ onSearchGig }) => {
         timelineRef.current.kill();
       }
     };
-  }, []); // Empty dependency array - runs once on mount
+  }, []); 
 
   return (
     <section ref={heroRef} className="hero" role="banner">
@@ -127,19 +132,18 @@ const Hero = React.memo(({ onSearchGig }) => {
           <SparkleButton 
             text="Shop Now" 
             onClick={handleSubmit}
-            ariaLabel="Submit your information to get started"
+            ariaLabel="Navigate to shop page"
           />
         </div>
       </div>
 
-      {/* Curved Image Loop - positioned outside main content */}
       <div ref={curvedImageRef} className="hero-curved-images" style={{
         position: 'absolute',
-        bottom: '60px', // Moved higher up - change this value as needed
+        bottom: '60px', 
         left: '0',
         right: '0',
         width: '100%',
-        height: '250px', // Increased height even more
+        height: '250px',
         zIndex: 10
       }}>
         <CurvedImageLoop

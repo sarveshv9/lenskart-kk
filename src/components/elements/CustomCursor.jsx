@@ -30,8 +30,9 @@ const CIRCLE_STYLES = {
   transition: 'opacity 0.2s ease-out',
   // Position children to stack inside the container
   position: 'absolute',
-  top: '-10px', // Offset to center the 20x20 element
-  left: '-10px', // at the hook's 0,0 cursor position
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
 };
 
 // Base styles for the "arrow" state

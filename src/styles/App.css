@@ -64,7 +64,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;       /* Fills the container completely */
-  background-image: url('../assets/BG1-2.png');
+  background-image: url('../assets/bg.webp');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
