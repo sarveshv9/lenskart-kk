@@ -17,6 +17,8 @@ const CONTAINER_STYLES = {
   willChange: 'transform, opacity',
   backfaceVisibility: 'hidden',
   mixBlendMode: 'difference',
+  // Hide on mobile/touch devices
+  display: 'block',
 };
 
 // Base styles for the "dot" state
@@ -42,8 +44,9 @@ const ARROW_STYLES = {
   mixBlendMode: 'difference',
   transition: 'opacity 0.2s ease-out',
   position: 'absolute',
-  top: '-10px', // Offset to center
-  left: '-10px', // Offset to center
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
 };
 
 // The CSS string to hide the default cursor
@@ -63,6 +66,9 @@ const INTERNAL_STYLES = `
     * {
       cursor: auto !important;
     }
+    #custom-cursor-container {
+      display: none !important;
+    }
   }
 `;
 
@@ -81,7 +87,7 @@ const CustomCursor = memo(() => {
       {/* --- Optimization: Accessibility --- */}
       {/* This is a purely decorative element and should be
           hidden from the accessibility tree. */}
-      <div ref={cursorRef} style={CONTAINER_STYLES} aria-hidden="true">
+      <div ref={cursorRef} style={CONTAINER_STYLES} aria-hidden="true" id="custom-cursor-container">
         {/*
           --- Optimization: Render Both, Toggle Opacity ---
           Instead of conditionally mounting/unmounting the SVG and DIV
