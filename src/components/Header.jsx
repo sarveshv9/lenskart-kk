@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useNavigate } from 'react-router-dom';
 import '../styles/Header.css';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
@@ -9,6 +10,7 @@ import logo from '../assets/lenskart_logo.png';
 gsap.registerPlugin(ScrollTrigger);
 
 const Header = ({ onSubmitReview }) => {
+  const navigate = useNavigate();
   const navContainerRef = useRef(null);
   const navLinksRef = useRef(null);
   const dotsRef = useRef(null);
@@ -28,33 +30,33 @@ const Header = ({ onSubmitReview }) => {
   useGSAP(() => {
     if (!navPortal || !navContainerRef.current) {
       console.log('Missing portal or nav container');
-      return; 
+      return;
     }
-    
+
     let currentScrollProgress = 0;
     let isHovered = false;
-    
+
     const navContainer = navContainerRef.current;
     const navLinks = navLinksRef.current;
     const dots = dotsRef.current;
     const nav = navRef.current;
-    
+
     gsap.set([navContainer, nav, navLinks, dots], {
       clearProps: "all"
     });
-    
+
     gsap.set(navContainer, {
       scale: 1,
       transformOrigin: "center center",
       force3D: true
     });
-    
+
     gsap.set(nav, {
       scale: 1,
       transformOrigin: "center center",
       force3D: true
     });
-    
+
     gsap.set(navLinks, {
       scale: 1,
       opacity: 1,
@@ -62,7 +64,7 @@ const Header = ({ onSubmitReview }) => {
       transformOrigin: "center center",
       force3D: true
     });
-    
+
     gsap.set(dots, {
       scale: 1,
       opacity: 0,
@@ -71,17 +73,17 @@ const Header = ({ onSubmitReview }) => {
       transformOrigin: "center center",
       force3D: true
     });
-    
+
     const navLinkElements = navLinks.querySelectorAll('.nav-link');
     gsap.set(navLinkElements, {
       scale: 1,
       transformOrigin: "center center",
       force3D: true
     });
-    
+
     gsap.delayedCall(0.1, () => {
       ScrollTrigger.refresh();
-      
+
       const scrollTriggerInstance = ScrollTrigger.create({
         trigger: '.header',
         start: 'bottom top+=100',
@@ -91,12 +93,12 @@ const Header = ({ onSubmitReview }) => {
         invalidateOnRefresh: true,
         onUpdate: (self) => {
           currentScrollProgress = self.progress;
-          
+
           if (!isHovered && self.progress > 0) {
             const scaleValue = gsap.utils.interpolate(1, 0.7, self.progress); // Reduced scale for better appearance
-            
+
             const scaleTl = gsap.timeline();
-            
+
             scaleTl
               .to(navContainer, {
                 scale: scaleValue,
@@ -137,7 +139,7 @@ const Header = ({ onSubmitReview }) => {
             if (self.progress > 0.3) {
               const linkOpacity = gsap.utils.interpolate(1, 0, (self.progress - 0.3) / 0.4);
               const linkY = gsap.utils.interpolate(0, -15, (self.progress - 0.3) / 0.4);
-              
+
               scaleTl.to(navLinks, {
                 opacity: linkOpacity,
                 y: linkY,
@@ -149,14 +151,14 @@ const Header = ({ onSubmitReview }) => {
             if (self.progress > 0.6) {
               const dotOpacity = gsap.utils.interpolate(0, 1, (self.progress - 0.6) / 0.4);
               const dotY = gsap.utils.interpolate(10, 0, (self.progress - 0.6) / 0.4);
-              
+
               scaleTl.to(dots, {
                 opacity: dotOpacity,
                 y: dotY,
                 duration: 0.1,
                 ease: 'none'
               }, 0);
-              
+
               gsap.set(dots, { pointerEvents: 'auto' });
             } else {
               // Explicitly set dots to be hidden when progress is below 0.6
@@ -183,7 +185,7 @@ const Header = ({ onSubmitReview }) => {
         isHovered = true;
         if (currentScrollProgress > 0) {
           const expandTl = gsap.timeline();
-          
+
           expandTl
             .to(navContainer, {
               scale: 1,
@@ -208,15 +210,15 @@ const Header = ({ onSubmitReview }) => {
             }, 0)
             .to(dots, {
               scale: 1,
-              opacity: 0, 
-              y: 10, 
-              pointerEvents: 'none', 
+              opacity: 0,
+              y: 10,
+              pointerEvents: 'none',
               duration: 0.2
             }, 0)
-            .to(navLinks, { 
-              opacity: 1, 
-              y: 0, 
-              duration: 0.3 
+            .to(navLinks, {
+              opacity: 1,
+              y: 0,
+              duration: 0.3
             }, 0.1);
         }
       };
@@ -225,9 +227,9 @@ const Header = ({ onSubmitReview }) => {
         isHovered = false;
         if (currentScrollProgress > 0) {
           const scaleValue = gsap.utils.interpolate(1, 0.7, currentScrollProgress); // Reduced scale for better appearance
-          
+
           const compactTl = gsap.timeline();
-          
+
           compactTl
             .to(navContainer, {
               scale: scaleValue,
@@ -261,29 +263,29 @@ const Header = ({ onSubmitReview }) => {
           if (currentScrollProgress > 0.3) {
             const linkOpacity = gsap.utils.interpolate(1, 0, (currentScrollProgress - 0.3) / 0.4);
             const linkY = gsap.utils.interpolate(0, -15, (currentScrollProgress - 0.3) / 0.4);
-            compactTl.to(navLinks, { 
-              opacity: linkOpacity, 
-              y: linkY, 
-              duration: 0.2 
+            compactTl.to(navLinks, {
+              opacity: linkOpacity,
+              y: linkY,
+              duration: 0.2
             }, 0);
           }
 
           if (currentScrollProgress > 0.6) {
             const dotOpacity = gsap.utils.interpolate(0, 1, (currentScrollProgress - 0.6) / 0.4);
             const dotY = gsap.utils.interpolate(10, 0, (currentScrollProgress - 0.6) / 0.4);
-            compactTl.to(dots, { 
-              opacity: dotOpacity, 
-              y: dotY, 
-              pointerEvents: 'auto', 
-              duration: 0.3 
+            compactTl.to(dots, {
+              opacity: dotOpacity,
+              y: dotY,
+              pointerEvents: 'auto',
+              duration: 0.3
             }, 0.1);
           } else {
             // Explicitly set dots to be hidden when progress is below 0.6
-            compactTl.to(dots, { 
-              opacity: 0, 
-              y: 10, 
-              pointerEvents: 'none', 
-              duration: 0.3 
+            compactTl.to(dots, {
+              opacity: 0,
+              y: 10,
+              pointerEvents: 'none',
+              duration: 0.3
             }, 0.1);
           }
         }
@@ -313,7 +315,7 @@ const Header = ({ onSubmitReview }) => {
   const NavigationComponent = () => (
     <div className="nav-container gsap-nav" ref={navContainerRef} style={{
       position: 'fixed',
-      top: '24px',
+      top: '16px',
       left: '50%',
       transform: 'translateX(-50%)',
       transformOrigin: 'center center',
@@ -323,35 +325,35 @@ const Header = ({ onSubmitReview }) => {
     }}>
       <nav className="nav" ref={navRef}>
         <div className="nav-links" ref={navLinksRef}>
-          <a 
-            href="#home" 
+          <a
+            href="#home"
             data-section="hero"
-            className="nav-link" 
-            onClick={(e) => { 
-              e.preventDefault(); 
-              scrollToSection('header'); 
+            className="nav-link"
+            onClick={(e) => {
+              e.preventDefault();
+              scrollToSection('header');
             }}
           >
             Home
           </a>
-          <a 
-            href="#eyewear-carousel" 
+          <a
+            href="#eyewear-carousel"
             data-section="htw"
-            className="nav-link" 
-            onClick={(e) => { 
-              e.preventDefault(); 
-              scrollToSection('eyewear-carousel'); 
+            className="nav-link"
+            onClick={(e) => {
+              e.preventDefault();
+              scrollToSection('eyewear-carousel');
             }}
           >
             Categories
           </a>
-          <a 
-            href="#footer" 
+          <a
+            href="#footer"
             data-section="support"
-            className="nav-link" 
-            onClick={(e) => { 
-              e.preventDefault(); 
-              scrollToSection('footer'); 
+            className="nav-link"
+            onClick={(e) => {
+              e.preventDefault();
+              scrollToSection('footer');
             }}
           >
             Support
@@ -375,6 +377,18 @@ const Header = ({ onSubmitReview }) => {
           </div>
           <div className="nav-placeholder"></div>
           <div className="header-actions">
+            <button
+              className="cta-button"
+              onClick={() => navigate('/shop')}
+            >
+              Shop Now
+            </button>
+            <button
+              className="cta-button"
+              onClick={() => navigate('/book-appointment')}
+            >
+              Book Now
+            </button>
           </div>
         </div>
       </header>

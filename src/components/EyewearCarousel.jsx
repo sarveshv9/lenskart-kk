@@ -116,9 +116,9 @@ export default function EyewearCarousel() {
   return (
     <div className="carousel-container" id="eyewear-carousel">
       {/* Background blobs */}
-      <div className="blob-container">
-        <div className="blob blob-1" />
-        <div className="blob blob-2" />
+      <div className="eyewear-blob-container">
+        <div className="eyewear-blob eyewear-blob-1" />
+        <div className="eyewear-blob eyewear-blob-2" />
       </div>
 
       <div className="carousel-wrapper">
