@@ -364,24 +364,20 @@
 
 /* Responsive design */
 @media (max-width: 768px) {
+  .header {
+    height: auto;
+    min-height: 90px;
+  }
+
   .header-content {
     flex-direction: column;
     gap: 20px;
     padding: 16px 20px;
+    height: auto;
   }
 
   .nav-container {
-    position: static;
-    transform: none;
-    order: 2;
-    opacity: 1 !important;
-    animation: none !important;
-    top: auto;
-    left: auto;
-  }
-
-  .nav-container:hover {
-    transform: translateY(-1px);
+    display: none !important;
   }
 
   .logo {
@@ -394,10 +390,7 @@
     flex: none;
   }
 
-  .nav-links {
-    display: none;
-  }
-
+  .nav-links,
   .nav-dots {
     display: none;
   }
