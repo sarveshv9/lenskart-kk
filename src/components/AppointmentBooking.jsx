@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Calendar, User, Phone, MessageSquare, Clock, AlertCircle, CheckCircle, Loader2, Info } from 'lucide-react';
+import '../styles/AppointmentBooking.css';
 
 const ACCENT_COLORS = {
   primary: '#0E2A4F',
@@ -134,378 +135,212 @@ const AppointmentBooking = () => {
   ];
 
   return (
-    <div style={{
-      fontFamily: 'system-ui, -apple-system, sans-serif',
-      background: '#ffffff',
-      minHeight: '100vh',
-      padding: '2rem 1rem'
-    }}>
-      <div style={{
-        maxWidth: '1400px',
-        margin: '0 auto 3rem',
-        padding: '0 1rem',
-        display: 'flex'
-      }}>
+    <div className="appointment-container">
+      {/* Background blobs */}
+      <div className="appointment-bg">
+        <div className="blob blob-1"></div>
+        <div className="blob blob-2"></div>
+      </div>
+
+      <div className="appointment-header">
         <button
           onClick={() => window.history.back()}
-          style={{
-            background: 'transparent',
-            border: 'none',
-            color: ACCENT_COLORS.primary,
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            cursor: 'pointer',
-            fontSize: '1rem',
-            fontWeight: '500',
-            padding: '0.5rem',
-            transition: 'opacity 0.2s',
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.opacity = '0.7'}
-          onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
+          className="glass-btn"
         >
           <ArrowLeft size={20} /> Back
         </button>
       </div>
 
-      <div style={{ maxWidth: '650px', margin: '0 auto', padding: '0 1rem' }}>
-
-        {/* Main Header */}
-        <div style={{ marginBottom: '2.5rem' }}>
-          <div style={{
-            color: ACCENT_COLORS.primary,
-            fontSize: '0.85rem',
-            fontWeight: '600',
-            textTransform: 'uppercase',
-            letterSpacing: '1px',
-            marginBottom: '1rem'
-          }}>
-            Services
-          </div>
-          <h1 style={{
-            fontSize: 'clamp(1.75rem, 5vw, 2.5rem)',
-            fontWeight: '400',
-            color: ACCENT_COLORS.dark,
-            marginBottom: '0.5rem',
-            lineHeight: 1.2
-          }}>
-            Book Your Consultation
-          </h1>
-          <p style={{
-            margin: 0,
-            color: '#666',
-            fontSize: '1rem'
-          }}>
-            Schedule your appointment and receive instant WhatsApp confirmation
-          </p>
-        </div>
-
-        {/* Form Content */}
-        <div>
-          {/* Sandbox Info Banner */}
-          <div style={{
-            background: 'linear-gradient(135deg, #FFF9E6 0%, #FFF4CC 100%)',
-            border: '1px solid #FFE69C',
-            padding: '1rem 1.25rem',
-            marginBottom: '2rem',
-            borderRadius: '12px',
-            fontSize: '0.9rem',
-            color: '#856404',
-            display: 'flex',
-            gap: '12px',
-            alignItems: 'flex-start'
-          }}>
-            <Info size={20} style={{ flexShrink: 0, marginTop: '2px' }} />
-            <div>
-              <strong style={{ display: 'block', marginBottom: '4px' }}>Using Twilio Sandbox?</strong>
-              Make sure you've joined the sandbox by sending "join &lt;your-sandbox-keyword&gt;" to the Twilio WhatsApp number first!
+      <div className="appointment-content">
+        <div className="glass-panel" style={{ padding: '2.5rem 2rem' }}>
+          {/* Main Header */}
+          <div className="appointment-title-area">
+            <div className="appointment-subtitle">
+              Services
             </div>
+            <h1 className="appointment-title">
+              Book Your Consultation
+            </h1>
+            <p className="appointment-description">
+              Schedule your appointment and receive instant WhatsApp confirmation
+            </p>
           </div>
 
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
-            {/* Name Field */}
-            <FormField
-              label="Full Name"
-              icon={<User size={18} />}
-              error={touched.name && fieldErrors.name}
-            >
-              <input
-                type="text"
-                name="name"
-                required
-                style={getInputStyle(touched.name && fieldErrors.name)}
-                value={formData.name}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                placeholder="Enter your full name"
-              />
-            </FormField>
-
-            {/* Phone Field */}
-            <FormField
-              label="WhatsApp Number"
-              icon={<Phone size={18} />}
-              helper="Include country code with + (e.g., +919876543210)"
-              error={touched.phone && fieldErrors.phone}
-            >
-              <input
-                type="tel"
-                name="phone"
-                required
-                style={getInputStyle(touched.phone && fieldErrors.phone)}
-                value={formData.phone}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                placeholder="+919876543210"
-              />
-            </FormField>
-
-            {/* Service Selection */}
-            <FormField
-              label="Select Service"
-              icon={<MessageSquare size={18} />}
-            >
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                {services.map((service) => (
-                  <label
-                    key={service.value}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '12px',
-                      padding: '1rem',
-                      border: `1px solid ${formData.service === service.value ? ACCENT_COLORS.primary : '#d1d5db'}`,
-                      cursor: 'pointer',
-                      transition: 'all 0.2s',
-                      background: formData.service === service.value ? `${ACCENT_COLORS.primary}05` : 'white',
-                    }}
-                    onMouseEnter={(e) => {
-                      if (formData.service !== service.value) {
-                        e.currentTarget.style.background = '#f9fafb';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (formData.service !== service.value) {
-                        e.currentTarget.style.background = 'white';
-                      }
-                    }}
-                  >
-                    <input
-                      type="radio"
-                      name="service"
-                      value={service.value}
-                      checked={formData.service === service.value}
-                      onChange={handleChange}
-                      style={{ display: 'none' }}
-                    />
-                    <span style={{ fontSize: '1.5rem' }}>{service.icon}</span>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: '600', color: ACCENT_COLORS.dark, marginBottom: '2px' }}>
-                        {service.value}
-                      </div>
-                      <div style={{ fontSize: '0.85rem', color: '#6b7280' }}>
-                        {service.description}
-                      </div>
-                    </div>
-                    {formData.service === service.value && (
-                      <CheckCircle size={20} color={ACCENT_COLORS.primary} />
-                    )}
-                  </label>
-                ))}
+          {/* Form Content */}
+          <div>
+            {/* Sandbox Info Banner */}
+            <div className="sandbox-banner">
+              <Info size={20} style={{ flexShrink: 0, marginTop: '2px' }} />
+              <div>
+                <strong>Using Twilio Sandbox?</strong>
+                Make sure you've joined the sandbox by sending "join &lt;your-sandbox-keyword&gt;" to the Twilio WhatsApp number first!
               </div>
-            </FormField>
+            </div>
 
-            {/* Date and Time */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
+            <form onSubmit={handleSubmit} className="appointment-form">
+              {/* Name Field */}
               <FormField
-                label="Date"
-                icon={<Calendar size={18} />}
-                error={touched.date && fieldErrors.date}
+                label="Full Name"
+                icon={<User size={18} />}
+                error={touched.name && fieldErrors.name}
               >
                 <input
-                  type="date"
-                  name="date"
+                  type="text"
+                  name="name"
                   required
-                  min={today}
-                  style={getInputStyle(touched.date && fieldErrors.date)}
-                  value={formData.date}
+                  className={`glass-input ${touched.name && fieldErrors.name ? 'has-error' : ''}`}
+                  value={formData.name}
                   onChange={handleChange}
                   onBlur={handleBlur}
+                  placeholder="Enter your full name"
                 />
               </FormField>
 
+              {/* Phone Field */}
               <FormField
-                label="Time"
-                icon={<Clock size={18} />}
-                error={touched.time && fieldErrors.time}
+                label="WhatsApp Number"
+                icon={<Phone size={18} />}
+                helper="Include country code with + (e.g., +919876543210)"
+                error={touched.phone && fieldErrors.phone}
               >
                 <input
-                  type="time"
-                  name="time"
+                  type="tel"
+                  name="phone"
                   required
-                  style={getInputStyle(touched.time && fieldErrors.time)}
-                  value={formData.time}
+                  className={`glass-input ${touched.phone && fieldErrors.phone ? 'has-error' : ''}`}
+                  value={formData.phone}
                   onChange={handleChange}
                   onBlur={handleBlur}
+                  placeholder="+919876543210"
                 />
               </FormField>
-            </div>
 
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={loading || showSuccess}
-              style={{
-                width: '100%',
-                background: loading || showSuccess ? '#94a3b8' : ACCENT_COLORS.primary,
-                color: 'white',
-                border: 'none',
-                padding: '1rem 2rem',
-                fontSize: '1rem',
-                fontWeight: '500',
-                cursor: loading || showSuccess ? 'not-allowed' : 'pointer',
-                transition: 'opacity 0.2s',
-                marginTop: '1rem',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '0.75rem',
-              }}
-              onMouseEnter={(e) => {
-                if (!loading && !showSuccess) {
-                  e.currentTarget.style.opacity = '0.9';
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!loading && !showSuccess) {
-                  e.currentTarget.style.opacity = '1';
-                }
-              }}
-            >
-              {loading && <Loader2 size={20} style={{ animation: 'spin 1s linear infinite' }} />}
-              {showSuccess && <CheckCircle size={20} />}
-              {loading ? 'Sending...' : showSuccess ? 'Confirmed!' : 'Confirm Appointment'}
-            </button>
+              {/* Service Selection */}
+              <FormField
+                label="Select Service"
+                icon={<MessageSquare size={18} />}
+              >
+                <div className="service-options">
+                  {services.map((service) => (
+                    <label
+                      key={service.value}
+                      className={`service-label ${formData.service === service.value ? 'selected' : ''}`}
+                    >
+                      <input
+                        type="radio"
+                        name="service"
+                        value={service.value}
+                        checked={formData.service === service.value}
+                        onChange={handleChange}
+                        style={{ display: 'none' }}
+                      />
+                      <span className="service-icon">{service.icon}</span>
+                      <div className="service-info">
+                        <div className="service-name">
+                          {service.value}
+                        </div>
+                        <div className="service-desc">
+                          {service.description}
+                        </div>
+                      </div>
+                      {formData.service === service.value && (
+                        <CheckCircle size={20} className="service-check" />
+                      )}
+                    </label>
+                  ))}
+                </div>
+              </FormField>
 
-            {/* Success Message */}
-            {status && (
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
-                padding: '1rem 1.25rem',
-                background: 'linear-gradient(135deg, #D4EDDA 0%, #C3E6CB 100%)',
-                border: `1px solid ${ACCENT_COLORS.success}`,
-                borderRadius: '10px',
-                color: '#155724',
-                animation: 'slideIn 0.3s ease-out',
-                fontWeight: '500'
-              }}>
-                <CheckCircle size={22} color={ACCENT_COLORS.success} />
-                <span>{status}</span>
+              {/* Date and Time */}
+              <div className="date-time-grid">
+                <FormField
+                  label="Date"
+                  icon={<Calendar size={18} />}
+                  error={touched.date && fieldErrors.date}
+                >
+                  <input
+                    type="date"
+                    name="date"
+                    required
+                    min={today}
+                    className={`glass-input ${touched.date && fieldErrors.date ? 'has-error' : ''}`}
+                    value={formData.date}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                </FormField>
+
+                <FormField
+                  label="Time"
+                  icon={<Clock size={18} />}
+                  error={touched.time && fieldErrors.time}
+                >
+                  <input
+                    type="time"
+                    name="time"
+                    required
+                    className={`glass-input ${touched.time && fieldErrors.time ? 'has-error' : ''}`}
+                    value={formData.time}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                </FormField>
               </div>
-            )}
 
-            {/* Error Message */}
-            {error && (
-              <div style={{
-                display: 'flex',
-                alignItems: 'flex-start',
-                gap: '12px',
-                padding: '1rem 1.25rem',
-                background: 'linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%)',
-                border: `1px solid ${ACCENT_COLORS.error}`,
-                borderRadius: '10px',
-                color: '#991B1B',
-                animation: 'slideIn 0.3s ease-out'
-              }}>
-                <AlertCircle size={22} color={ACCENT_COLORS.error} style={{ flexShrink: 0, marginTop: '2px' }} />
-                <span style={{ fontSize: '0.95rem' }}>{error}</span>
-              </div>
-            )}
-          </form>
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={loading || showSuccess}
+                className="submit-btn"
+              >
+                {loading && <Loader2 size={20} className="spin-icon" />}
+                {showSuccess && <CheckCircle size={20} />}
+                {loading ? 'Sending...' : showSuccess ? 'Confirmed!' : 'Confirm Appointment'}
+              </button>
+
+              {/* Success Message */}
+              {status && (
+                <div className="form-alert alert-success">
+                  <CheckCircle size={22} />
+                  <span>{status}</span>
+                </div>
+              )}
+
+              {/* Error Message */}
+              {error && (
+                <div className="form-alert alert-error">
+                  <AlertCircle size={22} style={{ flexShrink: 0, marginTop: '2px' }} />
+                  <span>{error}</span>
+                </div>
+              )}
+            </form>
+          </div>
         </div>
       </div>
-
-      <style>{`
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        
-        @keyframes slideIn {
-          from {
-            opacity: 0;
-            transform: translateY(-10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        input[type="date"]::-webkit-calendar-picker-indicator,
-        input[type="time"]::-webkit-calendar-picker-indicator {
-          cursor: pointer;
-          filter: opacity(0.6);
-        }
-
-        input[type="date"]::-webkit-calendar-picker-indicator:hover,
-        input[type="time"]::-webkit-calendar-picker-indicator:hover {
-          filter: opacity(1);
-        }
-      `}</style>
     </div >
   );
 };
 
 // Helper Components
 const FormField = ({ label, icon, helper, error, children }) => (
-  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-    <label style={{
-      display: 'flex',
-      alignItems: 'center',
-      gap: '8px',
-      fontSize: '0.9rem',
-      fontWeight: '600',
-      color: ACCENT_COLORS.dark,
-      marginBottom: '0.25rem'
-    }}>
-      {icon}
+  <div className="form-field-wrapper">
+    <label className="field-label">
+      <span style={{ opacity: 0.8 }}>{icon}</span>
       {label}
     </label>
     {children}
     {helper && !error && (
-      <small style={{ color: '#6b7280', fontSize: '0.85rem', marginTop: '-0.25rem' }}>
+      <small className="field-helper">
         {helper}
       </small>
     )}
     {error && (
-      <small style={{
-        color: ACCENT_COLORS.error,
-        fontSize: '0.85rem',
-        marginTop: '-0.25rem',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '4px'
-      }}>
+      <small className="field-error-msg">
         <AlertCircle size={14} />
         {error}
       </small>
     )}
   </div>
 );
-
-const getInputStyle = (hasError) => ({
-  width: '100%',
-  padding: '0.875rem 1rem',
-  border: `1px solid ${hasError ? ACCENT_COLORS.error : '#d1d5db'}`,
-  fontSize: '0.95rem',
-  outline: 'none',
-  boxSizing: 'border-box',
-  transition: 'all 0.2s',
-  background: hasError ? '#FEF2F2' : 'white',
-  fontFamily: 'inherit'
-});
 
 export default AppointmentBooking;

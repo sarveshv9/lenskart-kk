@@ -1,0 +1,424 @@
+/* AppointmentBooking.css - Refined Subtle Glass Theme */
+
+:root {
+    /* Subtle Accents based on the Header theme */
+    --accent-blue: #3b82f6;
+    --accent-blue-rgb: 59, 130, 246;
+
+    --accent-success: #10B981;
+    --accent-error: #EF4444;
+
+    --glass-bg: rgba(255, 255, 255, 0.015);
+    --glass-border: rgba(255, 255, 255, 0.05);
+    --glass-border-hover: rgba(59, 130, 246, 0.15);
+    --glass-blur: blur(12px);
+}
+
+/* =========================================
+   Base Container
+   ========================================= */
+.appointment-container {
+    position: relative;
+    min-height: 100vh;
+    background: transparent;
+    color: #f1f5f9;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    padding: 2rem 1rem;
+    overflow: hidden;
+}
+
+/* Subtle Animated Background Blobs */
+.appointment-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.appointment-bg .blob {
+    position: absolute;
+    filter: blur(100px);
+    opacity: 0.06;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.8);
+    animation: floatBlobs 20s infinite alternate ease-in-out;
+}
+
+.blob-1 {
+    top: -10%;
+    left: -10%;
+    width: 50vw;
+    height: 50vw;
+    background: rgba(59, 130, 246, 0.3);
+    /* Subtle blue */
+    animation-delay: 0s;
+}
+
+.blob-2 {
+    bottom: -20%;
+    right: -10%;
+    width: 60vw;
+    height: 60vw;
+    animation-delay: -5s;
+}
+
+/* =========================================
+   Header & Nav Area
+   ========================================= */
+.appointment-header {
+    max-width: 1400px;
+    margin: 0 auto 3rem;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    position: relative;
+    z-index: 10;
+}
+
+/* Shared Glass Button Styles */
+.glass-btn {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    color: #a1a1aa;
+    /* Subtle gray */
+    padding: 0.5rem 1rem;
+    border-radius: 99px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 400;
+    transition: all 0.2s ease;
+}
+
+.glass-btn:hover {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: var(--glass-border-hover);
+    color: #fff;
+}
+
+/* =========================================
+   Layout Containers
+   ========================================= */
+.appointment-content {
+    max-width: 650px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 10;
+}
+
+/* =========================================
+   Glass Panels / Generic Glassmorphism
+   ========================================= */
+.glass-panel {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    transition: all 0.3s ease;
+}
+
+/* =========================================
+   Titles and Typography
+   ========================================= */
+.appointment-title-area {
+    margin-bottom: 2.5rem;
+}
+
+.appointment-subtitle {
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 1rem;
+}
+
+.appointment-title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 300;
+    color: #fff;
+    line-height: 1.1;
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.5px;
+}
+
+.appointment-description {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 1.05rem;
+    line-height: 1.6;
+}
+
+/* =========================================
+   Sandbox Banner & Alerts
+   ========================================= */
+.sandbox-banner {
+    background: rgba(250, 204, 21, 0.05);
+    /* very subtle yellow */
+    border: 1px solid rgba(250, 204, 21, 0.2);
+    padding: 1rem 1.25rem;
+    margin-bottom: 2rem;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    color: #fde047;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    backdrop-filter: var(--glass-blur);
+}
+
+.sandbox-banner strong {
+    display: block;
+    margin-bottom: 4px;
+    font-weight: 500;
+    color: #fef08a;
+}
+
+.form-alert {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 1rem 1.25rem;
+    border-radius: 12px;
+    animation: slideIn 0.3s ease-out;
+    font-weight: 400;
+    backdrop-filter: var(--glass-blur);
+}
+
+.alert-success {
+    background: rgba(16, 185, 129, 0.05);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    color: #6ee7b7;
+}
+
+.alert-error {
+    background: rgba(239, 68, 68, 0.05);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    color: #fca5a5;
+    align-items: flex-start;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* =========================================
+   Form Fields
+   ========================================= */
+.appointment-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+}
+
+.form-field-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.field-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 0.25rem;
+}
+
+.field-helper {
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 0.85rem;
+    margin-top: -0.25rem;
+}
+
+.field-error-msg {
+    color: var(--accent-error);
+    font-size: 0.85rem;
+    margin-top: -0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Inputs */
+.glass-input {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    font-size: 0.95rem;
+    outline: none;
+    box-sizing: border-box;
+    transition: all 0.2s;
+    background: rgba(255, 255, 255, 0.02);
+    color: #fff;
+    font-family: inherit;
+    backdrop-filter: var(--glass-blur);
+}
+
+.glass-input:focus {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.glass-input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.glass-input.has-error {
+    border-color: rgba(239, 68, 68, 0.4);
+    background: rgba(239, 68, 68, 0.05);
+}
+
+/* Date/Time pickers */
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    filter: invert(1) opacity(0.5);
+    transition: filter 0.2s;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover,
+input[type="time"]::-webkit-calendar-picker-indicator:hover {
+    filter: invert(1) opacity(0.8);
+}
+
+/* Service Selection Radios */
+.service-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.service-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 1rem;
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: var(--glass-blur);
+}
+
+.service-label:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.service-label.selected {
+    background: rgba(59, 130, 246, 0.08);
+    /* slight blue tint */
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.service-icon {
+    font-size: 1.5rem;
+    opacity: 0.8;
+}
+
+.service-info {
+    flex: 1;
+}
+
+.service-name {
+    font-weight: 500;
+    color: #fff;
+    margin-bottom: 2px;
+}
+
+.service-desc {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.service-check {
+    color: var(--accent-blue);
+}
+
+/* Date Time Grid */
+.date-time-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+}
+
+/* Submit Button */
+.submit-btn {
+    width: 100%;
+    padding: 1.1rem 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    font-size: 1.05rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    transition: all 0.2s ease;
+    background: rgba(255, 255, 255, 0.05);
+    /* clean transparent button */
+    color: #fff;
+    margin-top: 1rem;
+}
+
+.submit-btn:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.submit-btn:active:not(:disabled) {
+    transform: translateY(1px);
+}
+
+.submit-btn:disabled {
+    background: rgba(255, 255, 255, 0.02);
+    color: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.05);
+    cursor: not-allowed;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.spin-icon {
+    animation: spin 1s linear infinite;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .date-time-grid {
+        grid-template-columns: 1fr;
+        gap: 1.75rem;
+    }
+}
