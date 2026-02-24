@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Calendar, User, Phone, MessageSquare, Clock, AlertCircle, CheckCircle, Loader2, Info } from 'lucide-react';
+import { ArrowLeft, Calendar, User, Phone, MessageSquare, Clock, AlertCircle, CheckCircle, Loader2, Info, Mail } from 'lucide-react';
+import emailjs from '@emailjs/browser';
 import '../styles/AppointmentBooking.css';
 
 const ACCENT_COLORS = {
@@ -14,8 +15,10 @@ const ACCENT_COLORS = {
 
 const AppointmentBooking = () => {
   const [formData, setFormData] = useState({
+    method: 'whatsapp', // 'whatsapp' or 'email'
     name: '',
     phone: '',
+    email: '',
     service: 'Eye Exam',
     date: '',
     time: ''
@@ -31,16 +34,23 @@ const AppointmentBooking = () => {
   const today = new Date().toISOString().split('T')[0];
 
   // Validate individual fields
-  const validateField = (name, value) => {
+  const validateField = (name, value, method = formData.method) => {
     switch (name) {
       case 'name':
         if (value.length < 2) return 'Name must be at least 2 characters';
         if (!/^[a-zA-Z\s]+$/.test(value)) return 'Name should only contain letters';
         break;
       case 'phone':
-        const cleanPhone = value.replace(/\s/g, '');
-        if (!cleanPhone.startsWith('+')) return 'Phone must start with + and country code';
-        if (!/^\+?[1-9]\d{7,14}$/.test(cleanPhone)) return 'Invalid phone number format';
+        if (method === 'whatsapp') {
+          const cleanPhone = value.replace(/\s/g, '');
+          if (!cleanPhone.startsWith('+')) return 'Phone must start with + and country code';
+          if (!/^\+?[1-9]\d{7,14}$/.test(cleanPhone)) return 'Invalid phone number format';
+        }
+        break;
+      case 'email':
+        if (method === 'email') {
+          if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Please enter a valid email address';
+        }
         break;
       case 'date':
         if (value < today) return 'Date cannot be in the past';
@@ -76,14 +86,16 @@ const AppointmentBooking = () => {
 
     // Validate all fields
     const errors = {};
-    Object.keys(formData).forEach(key => {
+    const fieldsToValidate = ['name', 'service', 'date', 'time', formData.method === 'whatsapp' ? 'phone' : 'email'];
+
+    fieldsToValidate.forEach(key => {
       const error = validateField(key, formData[key]);
       if (error) errors[key] = error;
     });
 
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
-      setTouched({ name: true, phone: true, service: true, date: true, time: true });
+      setTouched(fieldsToValidate.reduce((acc, key) => ({ ...acc, [key]: true }), {}));
       return;
     }
 
@@ -92,40 +104,67 @@ const AppointmentBooking = () => {
     setError(null);
 
     try {
-      const response = await fetch('/api/send-whatsapp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
+      if (formData.method === 'whatsapp') {
+        // --- WHATSAPP TWILIO LOGIC ---
+        const response = await fetch('/api/send-whatsapp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData),
+        });
 
-      // Try to parse JSON safely since a 404 on Vercel might return HTML (SPA fallback)
-      let data;
-      const text = await response.text();
-      try {
-        data = JSON.parse(text);
-      } catch (e) {
-        throw new Error(`Server returned non-JSON response: ${text.substring(0, 50)}...`);
-      }
+        let data;
+        const text = await response.text();
+        try {
+          data = JSON.parse(text);
+        } catch (e) {
+          throw new Error(`Server returned non-JSON response: ${text.substring(0, 50)}...`);
+        }
 
-      if (response.ok) {
-        setShowSuccess(true);
-        setStatus('Appointment booked successfully! Check your WhatsApp for confirmation.');
-
-        // Reset form after delay
-        setTimeout(() => {
-          setFormData({
-            name: '',
-            phone: '',
-            service: 'Eye Exam',
-            date: '',
-            time: ''
-          });
-          setTouched({});
-          setFieldErrors({});
-          setShowSuccess(false);
-        }, 5000);
+        if (response.ok) {
+          handleSuccess('Appointment booked successfully! Check your WhatsApp for confirmation.');
+        } else {
+          setError(data.details || data.error || 'Failed to send WhatsApp message');
+        }
       } else {
-        setError(data.details || data.error || 'Failed to send message');
+        // --- EMAILJS LOGIC ---
+        // Pull credentials from Vite environment variables
+        const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+        const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+        const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+
+        // Format date nicely for email
+        const formattedDate = new Date(formData.date).toLocaleDateString('en-US', {
+          weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+        });
+
+        // The template variables must match what you define in EmailJS template builder
+        const templateParams = {
+          to_name: formData.name,
+          to_email: formData.email,
+          service: formData.service,
+          date: formattedDate,
+          time: formData.time
+        };
+
+        try {
+          // Send via EmailJS API. 
+          // Note: Will throw an error until credentials are valid
+          await emailjs.send(
+            EMAILJS_SERVICE_ID,
+            EMAILJS_TEMPLATE_ID,
+            templateParams,
+            EMAILJS_PUBLIC_KEY
+          );
+          handleSuccess('Appointment booked successfully! Check your Email for confirmation.');
+        } catch (emailError) {
+          console.error("EmailJS Error:", emailError);
+          // Special fallback message for unconfigured setup
+          if (emailError.text && emailError.text.includes('invalid')) {
+            setError('Developer Notice: EmailJS credentials not yet configured in AppointmentBooking.jsx');
+          } else {
+            setError(`Failed to send email: ${emailError.text || emailError.message}`);
+          }
+        }
       }
     } catch (error) {
       console.error('Connection/Parsing error:', error);
@@ -133,6 +172,24 @@ const AppointmentBooking = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSuccess = (message) => {
+    setShowSuccess(true);
+    setStatus(message);
+    setTimeout(() => {
+      setFormData(prev => ({
+        ...prev,
+        name: '',
+        phone: '',
+        email: '',
+        date: '',
+        time: ''
+      }));
+      setTouched({});
+      setFieldErrors({});
+      setShowSuccess(false);
+    }, 5000);
   };
 
   const services = [
@@ -175,14 +232,43 @@ const AppointmentBooking = () => {
 
           {/* Form Content */}
           <div>
-            {/* Sandbox Info Banner */}
-            <div className="sandbox-banner">
-              <Info size={20} style={{ flexShrink: 0, marginTop: '2px' }} />
-              <div>
-                <strong>Using Twilio Sandbox?</strong>
-                Make sure you've joined the sandbox by sending "join &lt;your-sandbox-keyword&gt;" to the Twilio WhatsApp number first!
+            {/* Method Toggle */}
+            <div className="method-toggle">
+              <label className="field-label">How would you like to receive confirmation?</label>
+              <div className="method-options">
+                <button
+                  type="button"
+                  className={`method-btn ${formData.method === 'whatsapp' ? 'active' : ''}`}
+                  onClick={() => {
+                    setFormData({ ...formData, method: 'whatsapp' });
+                    setError(null);
+                  }}
+                >
+                  <MessageSquare size={18} /> WhatsApp
+                </button>
+                <button
+                  type="button"
+                  className={`method-btn ${formData.method === 'email' ? 'active' : ''}`}
+                  onClick={() => {
+                    setFormData({ ...formData, method: 'email' });
+                    setError(null);
+                  }}
+                >
+                  <Mail size={18} /> Email
+                </button>
               </div>
             </div>
+
+            {/* Sandbox Info Banner - Only show if WhatsApp is selected */}
+            {formData.method === 'whatsapp' && (
+              <div className="sandbox-banner">
+                <Info size={20} style={{ flexShrink: 0, marginTop: '2px' }} />
+                <div>
+                  <strong>Using Twilio Sandbox?</strong>
+                  Make sure you've joined the sandbox by sending "join &lt;your-sandbox-keyword&gt;" to the Twilio WhatsApp number first!
+                </div>
+              </div>
+            )}
 
             <form onSubmit={handleSubmit} className="appointment-form">
               {/* Name Field */}
@@ -203,24 +289,43 @@ const AppointmentBooking = () => {
                 />
               </FormField>
 
-              {/* Phone Field */}
-              <FormField
-                label="WhatsApp Number"
-                icon={<Phone size={18} />}
-                helper="Include country code with + (e.g., +919876543210)"
-                error={touched.phone && fieldErrors.phone}
-              >
-                <input
-                  type="tel"
-                  name="phone"
-                  required
-                  className={`glass-input ${touched.phone && fieldErrors.phone ? 'has-error' : ''}`}
-                  value={formData.phone}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  placeholder="+919876543210"
-                />
-              </FormField>
+              {/* Conditional Contact Field */}
+              {formData.method === 'whatsapp' ? (
+                <FormField
+                  label="WhatsApp Number"
+                  icon={<Phone size={18} />}
+                  helper="Include country code with + (e.g., +919876543210)"
+                  error={touched.phone && fieldErrors.phone}
+                >
+                  <input
+                    type="tel"
+                    name="phone"
+                    required
+                    className={`glass-input ${touched.phone && fieldErrors.phone ? 'has-error' : ''}`}
+                    value={formData.phone}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    placeholder="+919876543210"
+                  />
+                </FormField>
+              ) : (
+                <FormField
+                  label="Email Address"
+                  icon={<Mail size={18} />}
+                  error={touched.email && fieldErrors.email}
+                >
+                  <input
+                    type="email"
+                    name="email"
+                    required
+                    className={`glass-input ${touched.email && fieldErrors.email ? 'has-error' : ''}`}
+                    value={formData.email}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    placeholder="you@example.com"
+                  />
+                </FormField>
+              )}
 
               {/* Service Selection */}
               <FormField
