@@ -98,7 +98,14 @@ const AppointmentBooking = () => {
         body: JSON.stringify(formData),
       });
 
-      const data = await response.json();
+      // Try to parse JSON safely since a 404 on Vercel might return HTML (SPA fallback)
+      let data;
+      const text = await response.text();
+      try {
+        data = JSON.parse(text);
+      } catch (e) {
+        throw new Error(`Server returned non-JSON response: ${text.substring(0, 50)}...`);
+      }
 
       if (response.ok) {
         setShowSuccess(true);
@@ -121,8 +128,8 @@ const AppointmentBooking = () => {
         setError(data.details || data.error || 'Failed to send message');
       }
     } catch (error) {
-      console.error('Connection error:', error);
-      setError('Cannot connect to server. Make sure the backend is running on port 5000.');
+      console.error('Connection/Parsing error:', error);
+      setError(`Cannot process request: ${error.message}. If on Vercel, check the logs.`);
     } finally {
       setLoading(false);
     }

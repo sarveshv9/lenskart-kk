@@ -8,7 +8,7 @@ import twilio from 'twilio';
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 5001;
 
 // CORS configuration - VERY IMPORTANT FOR LOCAL DEVELOPMENT
 const corsOptions = {
@@ -23,7 +23,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // Handle preflight requests for all routes
-app.options('*', cors(corsOptions));
+// app.options('*', cors(corsOptions)); // Removed for Express 5 compatibility
 
 // Middleware
 app.use(express.json());
@@ -41,7 +41,8 @@ app.get('/api/test-cors', (req, res) => {
 // Twilio configuration
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
-const twilioWhatsAppNumber = process.env.TWILIO_WHATSAPP_NUMBER || 'whatsapp:+14155238886';
+const configTwilioNumber = process.env.TWILIO_WHATSAPP_NUMBER || 'whatsapp:+14155238886';
+const twilioWhatsAppNumber = configTwilioNumber.startsWith('whatsapp:') ? configTwilioNumber : `whatsapp:${configTwilioNumber}`;
 
 // Initialize Twilio client
 let client;
@@ -62,7 +63,7 @@ app.post('/api/send-whatsapp', async (req, res) => {
   res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
   res.header('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type');
-  
+
   try {
     // Check if Twilio is configured
     if (!client) {
@@ -82,9 +83,9 @@ app.post('/api/send-whatsapp', async (req, res) => {
     if (!service) missingFields.push('service');
     if (!date) missingFields.push('date');
     if (!time) missingFields.push('time');
-    
+
     if (missingFields.length > 0) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: 'Missing fields',
         details: `Please provide: ${missingFields.join(', ')}`,
         missingFields
@@ -122,10 +123,10 @@ app.post('/api/send-whatsapp', async (req, res) => {
         date: formattedDate,
         time
       });
-      
+
       // Simulate delay
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       return res.status(200).json({
         success: true,
         message: '[DEMO] Appointment booked successfully! (No actual message sent)',
@@ -142,7 +143,7 @@ app.post('/api/send-whatsapp', async (req, res) => {
 
     // REAL MODE - Send actual WhatsApp message
     console.log('📤 Sending WhatsApp message to:', formattedPhone);
-    
+
     let message;
     try {
       // Try using template if available
@@ -167,7 +168,7 @@ app.post('/api/send-whatsapp', async (req, res) => {
           to: formattedPhone
         });
       }
-      
+
       console.log('✅ WhatsApp message sent! SID:', message.sid);
 
     } catch (twilioError) {
@@ -176,7 +177,7 @@ app.post('/api/send-whatsapp', async (req, res) => {
         message: twilioError.message,
         moreInfo: twilioError.moreInfo
       });
-      
+
       // User-friendly error messages
       if (twilioError.code === 21211) {
         return res.status(400).json({
@@ -195,7 +196,7 @@ app.post('/api/send-whatsapp', async (req, res) => {
           details: 'The message template is not properly configured'
         });
       }
-      
+
       // Generic Twilio error
       return res.status(500).json({
         error: 'Twilio API error',
@@ -220,7 +221,7 @@ app.post('/api/send-whatsapp', async (req, res) => {
 
   } catch (error) {
     console.error('💥 Server error:', error);
-    
+
     res.status(500).json({
       error: 'Server error',
       details: error.message,
@@ -247,10 +248,10 @@ app.get('/api/health', (req, res) => {
 // Debug endpoint for checking environment
 app.get('/api/env-check', (req, res) => {
   // Safe logging - don't expose full tokens
-  const maskedSid = process.env.TWILIO_ACCOUNT_SID 
-    ? `AC...${process.env.TWILIO_ACCOUNT_SID.slice(-4)}` 
+  const maskedSid = process.env.TWILIO_ACCOUNT_SID
+    ? `AC...${process.env.TWILIO_ACCOUNT_SID.slice(-4)}`
     : 'not_set';
-  
+
   res.json({
     node: process.version,
     serverTime: new Date().toISOString(),
@@ -275,11 +276,11 @@ app.listen(port, () => {
   console.log(`📞 API endpoint: POST http://localhost:${port}/api/send-whatsapp`);
   console.log(`🩺 Health check: GET http://localhost:${port}/api/health`);
   console.log(`🧪 CORS test: GET http://localhost:${port}/api/test-cors`);
-  
+
   if (client) {
     console.log(`🔐 Twilio: ✅ Configured`);
     console.log(`   Using WhatsApp number: ${twilioWhatsAppNumber}`);
-    
+
     if (process.env.NODE_ENV === 'development' && !process.env.USE_REAL_TWILIO) {
       console.log(`   ⚠️  DEMO MODE: WhatsApp messages will be logged but not sent`);
       console.log(`   To enable real messages, set USE_REAL_TWILIO=true in .env`);
