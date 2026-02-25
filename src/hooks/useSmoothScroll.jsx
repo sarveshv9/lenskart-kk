@@ -9,8 +9,15 @@ gsap.registerPlugin(ScrollSmoother, ScrollTrigger);
  * A hook to initialize and manage a GSAP ScrollSmoother instance
  * with performance-optimized settings.
  */
-const useSmoothScroll = () => {
+const useSmoothScroll = (disable = false) => {
   useGSAP(() => {
+    // Kill any existing instance before creating a new one
+    ScrollSmoother.get()?.kill();
+
+    if (disable) {
+      return;
+    }
+
     // --- Best Practice: Device Detection ---
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     const isLowEndDevice = navigator.hardwareConcurrency <= 4 || navigator.deviceMemory <= 4;
@@ -42,9 +49,6 @@ const useSmoothScroll = () => {
     };
 
     const settings = getOptimalSettings();
-
-    // Kill any existing instance before creating a new one
-    ScrollSmoother.get()?.kill();
 
     const smoother = ScrollSmoother.create({
       wrapper: '.smooth-wrapper',
@@ -105,7 +109,7 @@ const useSmoothScroll = () => {
       clearTimeout(refreshTimeout);
       window.removeEventListener('resize', handleResize);
     };
-  }, []);
+  }, [disable]); // Re-run effect if `disable` changes
 };
 
 export default useSmoothScroll;

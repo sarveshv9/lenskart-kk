@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import useSmoothScroll from './hooks/useSmoothScroll';
 import { useGSAPScrollZoom } from './hooks/useGSAPScrollZoom';
 import { gsap } from 'gsap';
@@ -70,18 +70,21 @@ const Home = () => {
 // 2. Main App Component with Routing
 // ==============================================
 const App = () => {
+  const location = useLocation();
+  const disableSmoothScroll = location.pathname.startsWith('/shop') || location.pathname.startsWith('/book-appointment');
+
   // Global Smooth Scroll runs on the wrapper
-  useSmoothScroll();
+  useSmoothScroll(disableSmoothScroll);
 
   return (
-    <Router>
+    <>
       <div id="nav-portal"></div>
 
       {/* Global Cursor stays outside routes to work everywhere */}
       <CustomCursor />
 
-      <div className="smooth-wrapper">
-        <div className="smooth-content">
+      <div className={disableSmoothScroll ? "" : "smooth-wrapper"}>
+        <div className={disableSmoothScroll ? "" : "smooth-content"}>
           <Routes>
             {/* The Home Page */}
             <Route path="/" element={<Home />} />
@@ -94,7 +97,7 @@ const App = () => {
           </Routes>
         </div>
       </div>
-    </Router>
+    </>
   );
 };
 
